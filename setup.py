@@ -10,12 +10,19 @@ from distutils.unixccompiler import UnixCCompiler
 # apron svn trunk url
 apron_trunk_url='svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk'
 
+# patchelf 
+patchelf_name = 'patchelf-0.9'
+patchelf_archive = patchelf_name + ".tar.gz"
+
 ROOT_DIR=os.path.abspath(os.path.dirname(__file__))
 APRON_DIR=os.path.join(ROOT_DIR, 'apron')
 APRON_LIB_DIR = os.path.join(ROOT_DIR, "lib")
+PATCHELF_DIR = os.path.join(ROOT_DIR, patchelf_name)
+PATCHELF_BIN = os.path.join(ROOT_DIR, os.path.join("bin", "patchelf"))
 
 def download_apron():
-    subprocess.check_call(["svn", "co", apron_trunk_url, "apron"], cwd=ROOT_DIR)
+    subprocess.check_call(["svn", "co", apron_trunk_url, "apron"], 
+            cwd=ROOT_DIR)
 
 def configure_apron():
     subprocess.check_call(["./configure", 
@@ -37,9 +44,25 @@ def build_apron_util():
     apron_util_obj = os.path.join(ROOT_DIR, 
             os.path.join("pyapron", "apron_util.o"))
     cc = UnixCCompiler()
+    cc.add_include_dir(APRON_DIR)
     cc.compile([apron_util_src])
     cc.link_shared_lib([apron_util_obj], "apronutil", 
             output_dir=APRON_LIB_DIR)
+
+def build_patchelf():
+    subprocess.check_call(["tar", "-zxvf",
+        os.path.join("external", patchelf_archive)])
+    subprocess.check_call(["./configure",
+        "--prefix", ROOT_DIR], cwd=PATCHELF_DIR)
+    subprocess.check_call(["make",
+        "-j", str(multiprocessing.cpu_count())],
+        cwd=PATCHELF_DIR)
+    subprocess.check_call(["make", "install"], cwd=PATCHELF_DIR)
+
+def patch_elf(path):
+    subprocess.check_call([PATCHELF_BIN,
+        "--set-rpath", ".", path],
+        cwd=ROOT_DIR)
 
 class ApronExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -82,6 +105,17 @@ class ApronBuild(build_ext):
         for fname in os.listdir(APRON_LIB_DIR):
             fpath = os.path.join(APRON_LIB_DIR, fname)
             shutil.copy(fpath, dest_lib_dir)
+
+        # build patchelf
+        build_patchelf()
+
+        # run patchelf on each file
+        print("Patching binaries")
+        for fname in os.listdir(dest_lib_dir):
+            fpath = os.path.join(dest_lib_dir, fname)
+            basename, ext = os.path.splitext(fname)
+            if ext == ".so":
+                patch_elf(fpath)
 
 setup(name='pyapron',
       version='1.0',
