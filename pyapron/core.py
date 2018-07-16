@@ -1,5 +1,6 @@
 from lib import libapron, libpolka, libapronutil
 import ctypes
+import inspect
 
 # Texpr1 operators
 AP_TEXPR_ADD = 0
@@ -218,3 +219,12 @@ class Constraint():
                 const_expr.ap_expr,
                 const_scalar)
         assert(tcons1 != 0)
+
+
+def vars(names):
+    frame = inspect.currentframe()
+    parent_locals = frame.f_back.f_locals
+    
+    for vname in names:
+        parent_locals[vname] = Var(vname)
+
