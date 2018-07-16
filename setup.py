@@ -11,6 +11,7 @@ apron_trunk_url='svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk'
 
 ROOT_DIR=os.path.abspath(os.path.dirname(__file__))
 APRON_DIR=os.path.join(ROOT_DIR, 'apron')
+APRON_LIB_DIR = os.path.join(ROOT_DIR, "lib")
 
 def download_apron():
     subprocess.check_call(["svn", "co", apron_trunk_url, "apron"], cwd=ROOT_DIR)
@@ -50,13 +51,12 @@ class ApronBuild(build_ext):
         # copy binaries
         print("Copying apron")
 
-        apron_lib_dir = os.path.join(ROOT_DIR, "lib")
         dest_lib_dir = os.path.join(extdir, "apron")
         if not os.path.exists(dest_lib_dir):
             os.mkdir(dest_lib_dir)
 
-        for fname in os.listdir(apron_lib_dir):
-            fpath = os.path.join(apron_lib_dir, fname)
+        for fname in os.listdir(APRON_LIB_DIR):
+            fpath = os.path.join(APRON_LIB_DIR, fname)
             shutil.copy(fpath, dest_lib_dir)
 
 setup(name='pyapron',
