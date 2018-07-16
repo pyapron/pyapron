@@ -5,6 +5,7 @@ import sys
 import shutil
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
+from distutils.unixccompiler import UnixCCompiler
 
 # apron svn trunk url
 apron_trunk_url='svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk'
@@ -31,6 +32,15 @@ def build_apron():
         cwd=APRON_DIR)
     subprocess.check_call(["make", "install"], cwd=APRON_DIR)
 
+def build_apron_util():
+    apron_util_src = os.path.join("pyapron", "apron_util.c")
+    apron_util_obj = os.path.join(ROOT_DIR, 
+            os.path.join("pyapron", "apron_util.o"))
+    cc = UnixCCompiler()
+    cc.compile([apron_util_src])
+    cc.link_shared_lib([apron_util_obj], "apronutil", 
+            output_dir=APRON_LIB_DIR)
+
 class ApronExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
@@ -42,7 +52,8 @@ class ApronBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.abspath(
+                os.path.dirname(self.get_ext_fullpath(ext.name)))
         dest_lib_dir = os.path.join(extdir, "apron")
         print dest_lib_dir
 
@@ -57,6 +68,10 @@ class ApronBuild(build_ext):
         # build apron
         print("Building apron")
         build_apron()
+
+        # build apronutil
+        print("Building apronutil")
+        build_apron_util()
 
         # copy binaries
         print("Copying apron")
