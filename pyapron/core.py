@@ -162,3 +162,8 @@ class Var(Expr):
 
     def __str__(self):
         return self.name
+
+
+class Constraint():
+    def __init__(self, const_type, lhs, rhs):
+        pass

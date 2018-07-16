@@ -1,1 +1,1 @@
-from .pyapron import *
+from .core import *
