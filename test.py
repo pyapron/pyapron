@@ -5,10 +5,12 @@ y = Var('y')
 
 # expression construction
 e1 = x + y
-e2 = x*x
-e3 = 3*x
+e2 = 2*x + y + 3
+e3 = (x + y) * (2 + y)
 
-e4 = 3*x+y
+# constraint construction
+c1 = (x + y >= 2)
+assert(isinstance(c1, Constraint))
 
-e5 = 3*x + y + 42
-
+c2 = (x >= y)
+assert(isinstance(c2, Constraint))

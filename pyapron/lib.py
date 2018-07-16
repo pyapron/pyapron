@@ -80,3 +80,57 @@ libpolka = ctypes.cdll.LoadLibrary(libpolka_path)
 libapronutil = ctypes.cdll.LoadLibrary(libapronutil_path)
 os.chdir(old_cwd)
 
+# specify args types and return types
+libapron.ap_texpr1_copy.argtypes = [ctypes.c_void_p]
+libapron.ap_texpr1_copy.restype = ctypes.c_void_p
+
+libapron.ap_environment_lce.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.POINTER(ctypes.c_void_p)
+]
+libapron.ap_environment_lce.restype = ctypes.c_void_p
+
+libapron.ap_texpr1_extend_environment.argtypes = [ctypes.c_void_p,
+        ctypes.c_void_p]
+libapron.ap_texpr1_extend_environment.restype = ctypes.c_void_p
+
+libapron.ap_texpr1_binop.argtypes = [
+        ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_int,
+        ctypes.c_int
+]
+libapron.ap_texpr1_binop.restype = ctypes.c_void_p
+
+libapron.ap_environment_alloc_empty.argtypes = []
+libapron.ap_environment_alloc_empty.restype = ctypes.c_void_p
+
+libapron.ap_texpr1_cst_scalar_int.argtypes = [ctypes.c_void_p, ctypes.c_long]
+libapron.ap_texpr1_cst_scalar_int.restype = ctypes.c_void_p
+
+libapron.ap_environment_alloc.argtypes = [
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.c_size_t
+]
+libapron.ap_environment_alloc.restype = ctypes.c_void_p
+
+libapron.ap_texpr1_var.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+libapron.ap_texpr1_var.restype = ctypes.c_void_p
+
+libapron.ap_scalar_alloc.argtypes = []
+libapron.ap_scalar_alloc.restype = ctypes.c_void_p
+
+libapron.ap_scalar_set_int.argtypes = [ctypes.c_void_p, ctypes.c_long]
+
+libapronutil.tcons1_alloc.argtypes = [
+        ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.tcons1_alloc.restype = ctypes.c_void_p
+

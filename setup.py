@@ -46,8 +46,8 @@ def build_apron_util():
     cc = UnixCCompiler()
     cc.add_include_dir(APRON_DIR)
     cc.add_library_dir(APRON_LIB_DIR)
-    cc.set_libraries(["apron_debug"])
-    cc.compile([apron_util_src], extra_preargs=["-g"])
+    cc.set_libraries(["apron"])
+    cc.compile([apron_util_src])
     cc.link_shared_lib([apron_util_obj], "apronutil", 
             output_dir=APRON_LIB_DIR)
 
@@ -80,7 +80,6 @@ class ApronBuild(build_ext):
         extdir = os.path.abspath(
                 os.path.dirname(self.get_ext_fullpath(ext.name)))
         dest_lib_dir = os.path.join(extdir, "apron")
-        print dest_lib_dir
 
         # download apron
         print("Downloading apron")

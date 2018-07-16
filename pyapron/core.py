@@ -44,8 +44,8 @@ def texpr1_bin(op, e1, e2):
     assert(rhs != 0)
 
     # compute least common environment
-    dimchange1 = ctypes.c_char_p(0)
-    dimchange2 = ctypes.c_char_p(0)
+    dimchange1 = ctypes.c_void_p(None)
+    dimchange2 = ctypes.c_void_p(None)
     lce = libapron.ap_environment_lce(e1.ap_env,
                                       e2.ap_env,
                                       ctypes.byref(dimchange1),
@@ -61,7 +61,7 @@ def texpr1_bin(op, e1, e2):
     assert(rhs != 0)
 
     # create binary texpr1
-    ap_expr = libapron.ap_texpr1_binop(op,
+    ap_expr = libapron.ap_texpr1_binop(ctypes.c_int(op),
                                        lhs,
                                        rhs,
                                        rtype,
@@ -123,7 +123,7 @@ class Expr():
             assert(isinstance(other, Expr))
             return Constraint(AP_CONS_SUP, other, self)
 
-    def __leq__(self, other):
+    def __le__(self, other):
         if isinstance(other, int):
             return Constraint(AP_CONS_SUPEQ, IntExpr(other), self)
         else:
@@ -137,7 +137,7 @@ class Expr():
             assert(isinstance(other, Expr))
             return Constraint(AP_CONS_SUP, self, other)
 
-    def __geq__(self, other):
+    def __ge__(self, other):
         if isinstance(other, int):
             return Constraint(AP_CONS_SUPEQ, self, IntExpr(other))
         else:
@@ -183,15 +183,18 @@ class Var(Expr):
         self.name = name
 
         # create apron variable
-        ap_var = ctypes.create_string_buffer(name)
+        ap_var = ctypes.c_char_p(name)
+
+        # create ap_env
+        ap_env = libapron.ap_environment_alloc(ctypes.byref(ap_var),
+                                               ctypes.c_size_t(1),
+                                               None,
+                                               ctypes.c_size_t(0))
+        assert(ap_env != 0)
 
         # create apron texpr1
-        ap_expr = libapronutil.texpr1_var(ap_var)
+        ap_expr = libapron.ap_texpr1_var(ap_env, ap_var)
         assert(ap_expr != 0)
-
-        # get ap_expr environment
-        ap_env = libapronutil.texpr1_get_env(ap_expr)
-        assert(ap_env != 0)
 
         self.ap_var = ap_var
         self.ap_env = ap_env
@@ -211,7 +214,7 @@ class Constraint():
         libapron.ap_scalar_set_int(const_scalar, ctypes.c_long(0))
 
         # create tcons1
-        tcons1 = libapronutil.tcons1_alloc(const_type,
+        tcons1 = libapronutil.tcons1_alloc(ctypes.c_int(const_type),
                 const_expr.ap_expr,
                 const_scalar)
         assert(tcons1 != 0)
