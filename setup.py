@@ -45,7 +45,9 @@ def build_apron_util():
             os.path.join("pyapron", "apron_util.o"))
     cc = UnixCCompiler()
     cc.add_include_dir(APRON_DIR)
-    cc.compile([apron_util_src])
+    cc.add_library_dir(APRON_LIB_DIR)
+    cc.set_libraries(["apron_debug"])
+    cc.compile([apron_util_src], extra_preargs=["-g"])
     cc.link_shared_lib([apron_util_obj], "apronutil", 
             output_dir=APRON_LIB_DIR)
 

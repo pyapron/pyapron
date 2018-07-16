@@ -1,4 +1,4 @@
-from lib import libapron, libpolka
+from lib import libapron, libpolka, libapronutil
 import ctypes
 
 # Texpr1 operators
@@ -20,6 +20,11 @@ AP_RTYPE_INT = 1
 
 # Rounding direction
 AP_RDIR_NEAREST = 0
+
+# Constraints types
+AP_CONS_EQ = 0
+AP_CONS_SUPEQ = 1
+AP_CONS_SUP = 2
 
 # Allocate apron manager
 ap_man = libpolka.pk_manager_alloc(ctypes.c_int(1))
@@ -111,6 +116,41 @@ class Expr():
         assert(isinstance(other, int))
         return BinaryExpr(AP_TEXPR_DIV, IntExpr(other), self)
 
+    def __lt__(self, other):
+        if isinstance(other, int):
+            return Constraint(AP_CONS_SUP, IntExpr(other), self)
+        else:
+            assert(isinstance(other, Expr))
+            return Constraint(AP_CONS_SUP, other, self)
+
+    def __leq__(self, other):
+        if isinstance(other, int):
+            return Constraint(AP_CONS_SUPEQ, IntExpr(other), self)
+        else:
+            assert(isinstance(other, Expr))
+            return Constraint(AP_CONS_SUPEQ, other, self)
+
+    def __gt__(self, other):
+        if isinstance(other, int):
+            return Constraint(AP_CONS_SUP, self, IntExpr(other))
+        else:
+            assert(isinstance(other, Expr))
+            return Constraint(AP_CONS_SUP, self, other)
+
+    def __geq__(self, other):
+        if isinstance(other, int):
+            return Constraint(AP_CONS_SUPEQ, self, IntExpr(other))
+        else:
+            assert(isinstance(other, Expr))
+            return Constraint(AP_CONS_SUPEQ, self, other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return Constraint(AP_CONS_EQ, self, IntExpr(other))
+        else:
+            assert(isinstance(other, Expr))
+            return Constraint(AP_CONS_EQ, self, other)
+
 
 # BinaryExpr
 class BinaryExpr(Expr):
@@ -143,18 +183,15 @@ class Var(Expr):
         self.name = name
 
         # create apron variable
-        ap_var = ctypes.c_char_p(name)
+        ap_var = ctypes.create_string_buffer(name)
 
-        # create apron environment
-        ap_env = libapron.ap_environment_alloc(ctypes.byref(ap_var), 
-                                               ctypes.c_size_t(1), 
-                                               ctypes.c_char_p(0), 
-                                               ctypes.c_size_t(0))
-        assert(ap_env != 0)
-
-        # create apron tree expression
-        ap_expr = libapron.ap_texpr1_var(ap_env, ap_var)
+        # create apron texpr1
+        ap_expr = libapronutil.texpr1_var(ap_var)
         assert(ap_expr != 0)
+
+        # get ap_expr environment
+        ap_env = libapronutil.texpr1_get_env(ap_expr)
+        assert(ap_env != 0)
 
         self.ap_var = ap_var
         self.ap_env = ap_env
@@ -166,4 +203,15 @@ class Var(Expr):
 
 class Constraint():
     def __init__(self, const_type, lhs, rhs):
-        pass
+        const_expr = BinaryExpr(AP_TEXPR_SUB, lhs, rhs)
+
+        # create scalar
+        const_scalar = libapron.ap_scalar_alloc()
+        assert(const_scalar != 0)
+        libapron.ap_scalar_set_int(const_scalar, ctypes.c_long(0))
+
+        # create tcons1
+        tcons1 = libapronutil.tcons1_alloc(const_type,
+                const_expr.ap_expr,
+                const_scalar)
+        assert(tcons1 != 0)
