@@ -2,10 +2,9 @@ import os
 import subprocess
 import multiprocessing
 import sys
-from distutils.errors import LibError
-from distutils.command.build import build as _build
-from distutils.command.install import install as _install
-from setuptools import setup
+import shutil
+from setuptools.command.build_ext import build_ext
+from setuptools import setup, Extension
 
 # apron svn trunk url
 apron_trunk_url='svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk'
@@ -14,33 +13,58 @@ ROOT_DIR=os.path.abspath(os.path.dirname(__file__))
 APRON_DIR=os.path.join(ROOT_DIR, 'apron')
 
 def download_apron():
-    if subprocess.call(['svn', 'co', apron_trunk_url, 'apron'], cwd=ROOT_DIR) != 0:
-        raise LibError("Unable to download apron using svn")
+    subprocess.check_call(["svn", "co", apron_trunk_url, "apron"], cwd=ROOT_DIR)
 
 def configure_apron():
-    if subprocess.call(['./configure', '-prefix', ROOT_DIR, '-no-java', '-no-ocaml', '-no-ppl', '-no-cxx'], cwd=APRON_DIR) != 0:
-        raise LibError("Unable to configure apron")
+    subprocess.check_call(["./configure", "-prefix", ROOT_DIR, "-no-ppl", "-no-ocaml", "-no-java", "-no-cxx"], cwd=APRON_DIR)
 
 def build_apron():
-    if subprocess.call(['make', '-j', str(multiprocessing.cpu_count())], cwd=APRON_DIR) != 0:
-        raise LibError("Unable to build apron")
+    subprocess.check_call(["make", "-j", str(multiprocessing.cpu_count())], cwd=APRON_DIR)
+    subprocess.check_call(["make", "install"], cwd=APRON_DIR)
 
-def install_apron():
-    if subprocess.call(['make', 'install'], cwd=APRON_DIR) != 0:
-        raise LibError("Unable to install apron")
+class ApronExtension(Extension):
+    def __init__(self, name, sourcedir=''):
+        Extension.__init__(self, name, sources=[])
+        self.sourcedir = os.path.abspath(sourcedir)
 
-class build(_build):
+class ApronBuild(build_ext):
     def run(self):
-        self.execute(download_apron, (), msg="Downloading apron")
-        self.execute(configure_apron, (), msg="Configuring apron")
-        self.execute(build_apron, (), msg="Building apron")
-        self.execute(install_apron, (), msg="Installing apron")
-        _build.run(self)
+        for ext in self.extensions:
+            self.build_extension(ext)
+
+    def build_extension(self, ext):
+        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+
+        # download apron
+        print("Downloading apron")
+        download_apron()
+
+        # configure apron
+        print("Configuring apron")
+        configure_apron()
+
+        # build apron
+        print("Building apron")
+        build_apron()
+
+        # copy binaries
+        print("Copying apron")
+
+        apron_lib_dir = os.path.join(ROOT_DIR, "lib")
+        dest_lib_dir = os.path.join(extdir, "apron")
+        if not os.path.exists(dest_lib_dir):
+            os.mkdir(dest_lib_dir)
+
+        for fname in os.listdir(apron_lib_dir):
+            fpath = os.path.join(apron_lib_dir, fname)
+            shutil.copy(fpath, dest_lib_dir)
 
 setup(name='pyapron',
+      version='1.0',
       description='Python bindings for apron',
       author='Remy Boutonnet',
       license='LGPL',
       packages=['pyapron'],
-      cmdclass={'build': build}
+      ext_modules=[ApronExtension('apron')],
+      cmdclass=dict(build_ext=ApronBuild)
 )
