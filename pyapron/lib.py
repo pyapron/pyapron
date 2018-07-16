@@ -4,6 +4,7 @@ import site
 
 libapron_name = "libapron.so"
 libpolka_name = "libpolkaMPQ.so"
+libapronutil_name = "libapronutil.so"
 
 def search_lib(basedir, libname):
     apron_dir = os.path.join(basedir, "apron")
@@ -65,10 +66,17 @@ libpolka_path = get_lib_path(libpolka_name)
 if libpolka_path is None:
     raise RuntimeError("failed to find " + libpolka_name)
 
+# search libapronutil
+libapronutil_path = get_lib_path(libapronutil_name)
+
+if libapronutil_path is None:
+    raise RuntimeError("failed to find " + libapronutil_name)
+
 # load libapron
 old_cwd = os.getcwd()
 os.chdir(os.path.dirname(libapron_path))
 libapron = ctypes.cdll.LoadLibrary(libapron_path)
 libpolka = ctypes.cdll.LoadLibrary(libpolka_path)
+libapronutil = ctypes.cdll.LoadLibrary(libapronutil_path)
 os.chdir(old_cwd)
 
