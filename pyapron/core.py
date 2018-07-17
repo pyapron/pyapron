@@ -1,12 +1,12 @@
-from lib import libapron, libpolka, libapronutil
+from lib import libapron, libapronutil
 import ctypes
 import inspect
 
 # Texpr1 operators
-AP_TEXPR_ADD = 0
-AP_TEXPR_SUB = 1
-AP_TEXPR_MUL = 2
-AP_TEXPR_DIV = 3
+AP_TEXPR_ADD = libapronutil.get_ap_texpr_add()
+AP_TEXPR_SUB = libapronutil.get_ap_texpr_sub()
+AP_TEXPR_MUL = libapronutil.get_ap_texpr_mul()
+AP_TEXPR_DIV = libapronutil.get_ap_texpr_div()
 
 # Operators names
 op_name = {
@@ -17,19 +17,15 @@ op_name = {
 }
 
 # Rounding type
-AP_RTYPE_INT = 1
+AP_RTYPE_INT = libapronutil.get_ap_rtype_int()
 
 # Rounding direction
-AP_RDIR_NEAREST = 0
+AP_RDIR_NEAREST = libapronutil.get_ap_rdir_nearest()
 
 # Constraints types
-AP_CONS_EQ = 0
-AP_CONS_SUPEQ = 1
-AP_CONS_SUP = 2
-
-# Allocate apron manager
-ap_man = libpolka.pk_manager_alloc(ctypes.c_int(1))
-assert(ap_man != 0)
+AP_CONS_EQ = libapronutil.get_ap_cons_eq()
+AP_CONS_SUPEQ = libapronutil.get_ap_cons_supeq()
+AP_CONS_SUP = libapronutil.get_ap_cons_sup()
 
 # Create apron texpr1 binary expression
 def texpr1_bin(op, e1, e2):
@@ -38,11 +34,11 @@ def texpr1_bin(op, e1, e2):
 
     # copy e1.ap_expr
     lhs = libapron.ap_texpr1_copy(e1.ap_expr)
-    assert(lhs != 0)
+    assert(lhs != ctypes.c_void_p(None))
     
     # copy e2.ap_expr
     rhs = libapron.ap_texpr1_copy(e2.ap_expr)
-    assert(rhs != 0)
+    assert(rhs != ctypes.c_void_p(None))
 
     # compute least common environment
     dimchange1 = ctypes.c_void_p(None)
@@ -51,23 +47,23 @@ def texpr1_bin(op, e1, e2):
                                       e2.ap_env,
                                       ctypes.byref(dimchange1),
                                       ctypes.byref(dimchange2))
-    assert(lce != 0)
+    assert(lce != ctypes.c_void_p(None))
 
     # change environment of lhs
     lhs = libapron.ap_texpr1_extend_environment(lhs, lce)
-    assert(lhs != 0)
+    assert(lhs != ctypes.c_void_p(None))
 
     # change environment rhs
     rhs = libapron.ap_texpr1_extend_environment(rhs, lce)
-    assert(rhs != 0)
+    assert(rhs != ctypes.c_void_p(None))
 
     # create binary texpr1
-    ap_expr = libapron.ap_texpr1_binop(ctypes.c_int(op),
+    ap_expr = libapron.ap_texpr1_binop(op,
                                        lhs,
                                        rhs,
                                        rtype,
                                        rdir)
-    assert(ap_expr != 0)
+    assert(ap_expr != ctypes.c_void_p(None))
     return (ap_expr, lce)
 
 
@@ -166,10 +162,10 @@ class BinaryExpr(Expr):
 class IntExpr(Expr):
     def __init__(self, x):
         ap_env = libapron.ap_environment_alloc_empty()
-        assert(ap_env != 0)
+        assert(ap_env != ctypes.c_void_p(0))
         ap_expr = libapron.ap_texpr1_cst_scalar_int(ap_env,
                                                     ctypes.c_long(x))
-        assert(ap_expr != 0)
+        assert(ap_expr != ctypes.c_void_p(0))
         self.value = x
         self.ap_expr = ap_expr
         self.ap_env = ap_env
@@ -191,11 +187,11 @@ class Var(Expr):
                                                ctypes.c_size_t(1),
                                                None,
                                                ctypes.c_size_t(0))
-        assert(ap_env != 0)
+        assert(ap_env != ctypes.c_void_p(0))
 
         # create apron texpr1
         ap_expr = libapron.ap_texpr1_var(ap_env, ap_var)
-        assert(ap_expr != 0)
+        assert(ap_expr != ctypes.c_void_p(0))
 
         self.ap_var = ap_var
         self.ap_env = ap_env
@@ -215,13 +211,15 @@ class Constraint():
         libapron.ap_scalar_set_int(const_scalar, ctypes.c_long(0))
 
         # create tcons1
-        tcons1 = libapronutil.tcons1_alloc(ctypes.c_int(const_type),
+        tcons1 = libapronutil.tcons1_alloc(const_type,
                 const_expr.ap_expr,
                 const_scalar)
         assert(tcons1 != 0)
 
+        self.ap_tcons1 = tcons1
 
-def vars(names):
+
+def declare(names):
     frame = inspect.currentframe()
     parent_locals = frame.f_back.f_locals
     

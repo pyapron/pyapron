@@ -28,7 +28,7 @@ def build_apron_util():
     cc.add_include_dir(APRON_DIR)
     cc.add_include_dir(os.path.join(ROOT_DIR, "include"))
     cc.add_library_dir(APRON_LIB_DIR)
-    cc.set_libraries(["apron"])
+    cc.set_libraries(["apron_debug"])
     cc.compile([apron_util_src], extra_preargs=["-fPIC"])
     cc.link_shared_lib([apron_util_obj], "apronutil", 
             output_dir=APRON_LIB_DIR)

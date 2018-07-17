@@ -2,8 +2,8 @@ import os
 import ctypes
 import site
 
-libapron_name = "libapron.so"
-libpolka_name = "libpolkaMPQ.so"
+libapron_name = "libapron_debug.so"
+libpolka_name = "libpolkaMPQ_debug.so"
 libapronutil_name = "libapronutil.so"
 
 def search_lib(basedir, libname):
@@ -133,4 +133,48 @@ libapronutil.tcons1_alloc.argtypes = [
         ctypes.c_void_p
 ]
 libapronutil.tcons1_alloc.restype = ctypes.c_void_p
+
+libapronutil.get_ap_texpr_add.argtypes = []
+libapronutil.get_ap_texpr_add.restype = ctypes.c_int
+
+libapronutil.get_ap_texpr_sub.argtypes = []
+libapronutil.get_ap_texpr_sub.restype = ctypes.c_int
+
+libapronutil.get_ap_texpr_mul.argtypes = []
+libapronutil.get_ap_texpr_mul.restype = ctypes.c_int
+
+libapronutil.get_ap_texpr_div.argtypes = []
+libapronutil.get_ap_texpr_div.restype = ctypes.c_int
+
+libapronutil.get_ap_cons_eq.argtypes = []
+libapronutil.get_ap_cons_eq.restype = ctypes.c_int
+
+libapronutil.get_ap_cons_supeq.argtypes = []
+libapronutil.get_ap_cons_supeq.restype = ctypes.c_int
+
+libapronutil.get_ap_cons_sup.argtypes = []
+libapronutil.get_ap_cons_sup.restype = ctypes.c_int
+
+libpolka.pk_manager_alloc.argtypes = [ctypes.c_int]
+libpolka.pk_manager_alloc.restype = ctypes.c_void_p
+
+libapronutil.tcons1_array_make.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+libapronutil.tcons1_array_make.restype = ctypes.c_void_p
+
+libapronutil.tcons1_get_env.argtypes = [ctypes.c_void_p]
+libapronutil.tcons1_get_env.restype = ctypes.c_void_p
+
+libapronutil.abstract1_of_tcons_array.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_of_tcons_array.restype = ctypes.c_void_p
+
+libapron.ap_tcons1_array_set.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_size_t,
+        ctypes.c_void_p
+]
+libapron.ap_tcons1_array_set.restype = ctypes.c_int
 
