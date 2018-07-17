@@ -26,6 +26,7 @@ def build_apron_util():
             os.path.join("pyapron", "apron_util.o"))
     cc = UnixCCompiler()
     cc.add_include_dir(APRON_DIR)
+    cc.add_include_dir(os.path.join(ROOT_DIR, "include"))
     cc.add_library_dir(APRON_LIB_DIR)
     cc.set_libraries(["apron"])
     cc.compile([apron_util_src], extra_preargs=["-fPIC"])
