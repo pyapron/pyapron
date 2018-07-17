@@ -2,8 +2,8 @@ import os
 import ctypes
 import site
 
-libapron_name = "libapron_debug.so"
-libpolka_name = "libpolkaMPQ_debug.so"
+libapron_name = "libapron.so"
+libpolka_name = "libpolkaMPQ.so"
 libapronutil_name = "libapronutil.so"
 
 def search_lib(basedir, libname):

@@ -47,7 +47,7 @@ def build_apron_util():
     cc.add_include_dir(APRON_DIR)
     cc.add_library_dir(APRON_LIB_DIR)
     cc.set_libraries(["apron"])
-    cc.compile([apron_util_src])
+    cc.compile([apron_util_src], extra_preargs=["-fPIC"])
     cc.link_shared_lib([apron_util_obj], "apronutil", 
             output_dir=APRON_LIB_DIR)
 
@@ -118,11 +118,24 @@ class ApronBuild(build_ext):
             if ext == ".so":
                 patch_elf(fpath)
 
+
+with open("README.md", "r") as f:
+    readme = f.read()
+
 setup(name='pyapron',
       version='1.0',
-      description='Python bindings for apron',
+      description='Python API for numerical abstract domains manipulation',
+      long_description=readme,
+      long_description_content_type="text/markdown",
+      url="https://github.com/rjb32/pyapron",
       author='Remy Boutonnet',
       license='LGPL',
+      classifiers=(
+          "Programming Language :: Python :: 2.7",
+          "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
+          "Operating System :: Unix",
+          "Development Status :: 3 - Alpha"
+      ),
       packages=['pyapron'],
       ext_modules=[ApronExtension('apron')],
       cmdclass=dict(build_ext=ApronBuild)
