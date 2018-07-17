@@ -4,6 +4,9 @@ set -e
 ROOT=$(pwd)
 JOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
+if [ "$(ldconfig -p | grep libgmp)" -eq "" ]
+then
+
 # gmp
 wget https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2
 tar -jxvf gmp*.bz2
@@ -36,6 +39,8 @@ make -j $JOBS
 make install
 cd ..
 rm -rf mpc*
+
+fi
 
 # apron-dist
 svn co svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk apron
