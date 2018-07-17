@@ -7,37 +7,18 @@ from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
 from distutils.unixccompiler import UnixCCompiler
 
-# apron svn trunk url
-apron_trunk_url='svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk'
-
 # patchelf 
 patchelf_name = 'patchelf-0.9'
 patchelf_archive = patchelf_name + ".tar.gz"
 
 ROOT_DIR=os.path.abspath(os.path.dirname(__file__))
-APRON_DIR=os.path.join(ROOT_DIR, 'apron')
 APRON_LIB_DIR = os.path.join(ROOT_DIR, "lib")
+APRON_DIR = os.path.join(ROOT_DIR, "apron")
 PATCHELF_DIR = os.path.join(ROOT_DIR, patchelf_name)
 PATCHELF_BIN = os.path.join(ROOT_DIR, os.path.join("bin", "patchelf"))
 
-def download_apron():
-    subprocess.check_call(["svn", "co", apron_trunk_url, "apron"], 
-            cwd=ROOT_DIR)
-
-def configure_apron():
-    subprocess.check_call(["./configure", 
-        "-prefix", ROOT_DIR, 
-        "-no-ppl", 
-        "-no-ocaml", 
-        "-no-java", 
-        "-no-cxx"], 
-        cwd=APRON_DIR)
-
 def build_apron():
-    subprocess.check_call(["make", 
-        "-j", str(multiprocessing.cpu_count())], 
-        cwd=APRON_DIR)
-    subprocess.check_call(["make", "install"], cwd=APRON_DIR)
+    subprocess.check_call(["./dependencies.sh"])
 
 def build_apron_util():
     apron_util_src = os.path.join("pyapron", "apron_util.c")
@@ -81,14 +62,6 @@ class ApronBuild(build_ext):
                 os.path.dirname(self.get_ext_fullpath(ext.name)))
         dest_lib_dir = os.path.join(extdir, "apron")
 
-        # download apron
-        print("Downloading apron")
-        download_apron()
-
-        # configure apron
-        print("Configuring apron")
-        configure_apron()
-
         # build apron
         print("Building apron")
         build_apron()
@@ -123,7 +96,7 @@ with open("README.md", "r") as f:
     readme = f.read()
 
 setup(name='pyapron',
-      version='1.0',
+      version='0.1',
       description='Python API for numerical abstract domains manipulation',
       long_description=readme,
       long_description_content_type="text/markdown",
@@ -138,5 +111,6 @@ setup(name='pyapron',
       ),
       packages=['pyapron'],
       ext_modules=[ApronExtension('apron')],
-      cmdclass=dict(build_ext=ApronBuild)
+      cmdclass=dict(build_ext=ApronBuild),
+      include_package_data=True
 )

@@ -14,3 +14,6 @@ assert(isinstance(c1, Constraint))
 
 c2 = (x >= y)
 assert(isinstance(c2, Constraint))
+
+c3 = (3*x + 2*y >= 7*x + 23)
+assert(isinstance(c3, Constraint))
