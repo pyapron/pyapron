@@ -178,3 +178,29 @@ libapron.ap_tcons1_array_set.argtypes = [
 ]
 libapron.ap_tcons1_array_set.restype = ctypes.c_int
 
+libapronutil.tcons1_array_set.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_size_t,
+        ctypes.c_void_p
+]
+libapronutil.tcons1_array_set.restype = None
+
+libapron.ap_environment_lce_array.argtypes = [
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p)
+]
+libapron.ap_environment_lce_array.restype = ctypes.c_void_p
+
+libapron.ap_tcons1_extend_environment_with.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapron.ap_tcons1_extend_environment_with.restype = ctypes.c_int
+
+libapron.ap_abstract1_top.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapron.ap_abstract1_top.restype = ctypes.c_void_p
+
