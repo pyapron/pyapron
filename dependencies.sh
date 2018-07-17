@@ -4,29 +4,6 @@ set -e
 ROOT=$(pwd)
 JOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-function compile_libs {
-    if [ "$(ldconfig -p | grep libgmp)" = "" ]
-    then
-        echo "1"
-        exit
-    fi
-
-    if [ "$(ldconfig -p | grep libmpfr)" = "" ]
-    then
-        echo "1"
-        exit
-    fi
-
-    if [ "$(ldconfig -p | grep libmpc)" = "" ]
-    then
-        echo "1"
-        exit
-    fi
-}
-
-if [ -n "$(compile_libs)" ]
-then
-
 # gmp
 wget https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2
 tar -jxvf gmp*.bz2
@@ -67,17 +44,4 @@ cd apron
 make -j $JOBS
 make install
 cd ..
-
-else
-
-# apron-dist
-svn co svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk apron
-cd apron
-./configure -prefix $ROOT -no-ppl -no-java -no-ocaml -no-cxx
-make -j $JOBS
-make install
-cd ..
-
-fi
-
 
