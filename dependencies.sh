@@ -60,8 +60,6 @@ make install
 cd ..
 rm -rf mpc*
 
-fi
-
 # apron-dist
 svn co svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk apron
 cd apron
@@ -69,4 +67,17 @@ cd apron
 make -j $JOBS
 make install
 cd ..
+
+else
+
+# apron-dist
+svn co svn://scm.gforge.inria.fr/svnroot/apron/apron/trunk apron
+cd apron
+./configure -prefix $ROOT -no-ppl -no-java -no-ocaml -no-cxx
+make -j $JOBS
+make install
+cd ..
+
+fi
+
 
