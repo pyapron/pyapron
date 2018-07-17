@@ -4,7 +4,27 @@ set -e
 ROOT=$(pwd)
 JOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-if [ "$(ldconfig -p | grep libgmp)" = "" ]
+function compile_libs {
+    if [ "$(ldconfig -p | grep libgmp)" = "" ]
+    then
+        echo "1"
+        exit
+    fi
+
+    if [ "$(ldconfig -p | grep libmpfr)" = "" ]
+    then
+        echo "1"
+        exit
+    fi
+
+    if [ "$(ldconfig -p | grep libmpc)" = "" ]
+    then
+        echo "1"
+        exit
+    fi
+}
+
+if [ -n "$(compile_libs)" ]
 then
 
 # gmp
