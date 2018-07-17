@@ -4,7 +4,7 @@ set -e
 ROOT=$(pwd)
 JOBS=$(cat /proc/cpuinfo | grep processor | wc -l)
 
-if [ "$(ldconfig -p | grep libgmp)" -eq "" ]
+if [ "$(ldconfig -p | grep libgmp)" = "" ]
 then
 
 # gmp
