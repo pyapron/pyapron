@@ -9,8 +9,10 @@ ap_tcons1_t * tcons1_alloc(ap_constyp_t constyp,
                            ap_texpr1_t * texpr1,
                            ap_scalar_t * scalar)
 {
+    assert(texpr1 != NULL);
     ap_tcons1_t * tcons1 = malloc(sizeof(ap_tcons1_t));
     *tcons1 = ap_tcons1_make(constyp, texpr1, scalar);
+    assert(tcons1->tcons0.texpr0 != NULL);
     return tcons1;
 }
 
@@ -82,8 +84,15 @@ ap_abstract1_t * abstract1_of_tcons_array(ap_manager_t * aman,
     ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
     assert(ap_val);
 
+    int size = array->tcons0_array.size;
+
+    for(int i = 0; i < size; i++)
+    {
+        assert(array->tcons0_array.p[i].texpr0 != NULL);
+    }
+
     //*ap_val = ap_abstract1_of_tcons_array(aman, env, array);
-    *ap_val = ap_abstract1_bottom(aman, env)
+    *ap_val = ap_abstract1_bottom(aman, env);
 
     return ap_val;
 }
