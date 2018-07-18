@@ -1,3 +1,4 @@
 *.pyc
 *.swp
 *.pytest_cache
+pyapron.egg-info
