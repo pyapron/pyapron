@@ -105,3 +105,33 @@ void abstract1_dump(ap_manager_t * man,
 {
     ap_abstract1_fprint(stdout, man, val);
 }
+
+ap_environment_t * abstract1_env(ap_abstract1_t * val)
+{
+    return val->env;
+}
+
+ap_abstract1_t * abstract1_change_environment(ap_manager_t * man,
+                                              ap_abstract1_t * x,
+                                              ap_environment_t * env)
+{
+    ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
+    assert(ap_val);
+
+    *ap_val = ap_abstract1_change_environment(man, 0, x, env, 0);
+
+    return ap_val;
+}
+
+ap_abstract1_t * abstract1_join(ap_manager_t * man,
+                                ap_abstract1_t * x1,
+                                ap_abstract1_t * x2)
+{
+    ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
+    assert(ap_val);
+
+    *ap_val = ap_abstract1_join(man, 0, x1, x2);
+    
+    return ap_val;
+}
+

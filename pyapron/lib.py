@@ -210,3 +210,20 @@ libapronutil.tcons1_array_env.restype = ctypes.c_void_p
 libapronutil.abstract1_dump.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 libapronutil.abstract1_dump.restype = None
 
+libapronutil.abstract1_env.argtypes = [ctypes.c_void_p]
+libapronutil.abstract1_env.restype = ctypes.c_void_p
+
+libapronutil.abstract1_change_environment.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_change_environment.restype = ctypes.c_void_p
+
+libapronutil.abstract1_join.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_join.restype = ctypes.c_void_p
+

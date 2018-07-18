@@ -1,5 +1,6 @@
 from lib import libapron, libpolka, libapronutil
 import ctypes
+import copy
 
 # Polka apron manager
 pk_man = libpolka.pk_manager_alloc(ctypes.c_int(1))
@@ -57,6 +58,31 @@ class Polyhedron:
 
     def dump(self):
         libapronutil.abstract1_dump(pk_man, self.ap_val)
+
+    def join(self, other):
+        # compute the least common environment
+        dimchange1 = ctypes.c_void_p(None)
+        dimchange2 = ctypes.c_void_p(None)
+        lce = libapron.ap_environment_lce(libapronutil.abstract1_env(self.ap_val),
+                                          libapronutil.abstract1_env(other.ap_val),
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+
+        # change the environments
+        tmp1 = libapronutil.abstract1_change_environment(pk_man,
+                                                         self.ap_val,
+                                                         lce)
+        tmp2 = libapronutil.abstract1_change_environment(pk_man,
+                                                         other.ap_val,
+                                                         lce)
+
+        # compute the join
+        xjoin = libapronutil.abstract1_join(pk_man,
+                                            tmp1,
+                                            tmp2)
+        res = copy.deepcopy(self)
+        res.ap_val = xjoin
+        return res
 
 
 
