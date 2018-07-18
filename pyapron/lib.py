@@ -204,3 +204,9 @@ libapron.ap_abstract1_top.argtypes = [
 ]
 libapron.ap_abstract1_top.restype = ctypes.c_void_p
 
+libapronutil.tcons1_array_env.argtypes = [ctypes.c_void_p]
+libapronutil.tcons1_array_env.restype = ctypes.c_void_p
+
+libapronutil.abstract1_dump.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+libapronutil.abstract1_dump.restype = None
+

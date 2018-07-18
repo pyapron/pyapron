@@ -95,3 +95,13 @@ ap_abstract1_t * abstract1_of_tcons_array(ap_manager_t * aman,
     return ap_val;
 }
 
+ap_environment_t * tcons1_array_env(ap_tcons1_array_t * array)
+{
+    return array->env;
+}
+
+void abstract1_dump(ap_manager_t * man,
+                    ap_abstract1_t * val)
+{
+    ap_abstract1_fprint(stdout, man, val);
+}
