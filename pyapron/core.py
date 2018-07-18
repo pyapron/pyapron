@@ -157,6 +157,22 @@ class BinaryExpr(Expr):
         self.lhs = e1
         self.rhs = e2
 
+    def __str__(self):
+        if isinstance(self.lhs, BinaryExpr):
+            str_lhs = "(" + str(self.lhs) + ")"
+        else:
+            str_lhs = str(self.lhs)
+
+        if isinstance(self.rhs, BinaryExpr):
+            str_rhs = "(" + str(self.rhs) + ")"
+        else:
+            str_rhs = str(self.rhs)
+
+        return (str_lhs + " "
+                + op_name[self.op]
+                + " "
+                + str_rhs)
+
 
 # IntExpr
 class IntExpr(Expr):
