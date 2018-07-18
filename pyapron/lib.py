@@ -227,3 +227,22 @@ libapronutil.abstract1_join.argtypes = [
 ]
 libapronutil.abstract1_join.restype = ctypes.c_void_p
 
+libapronutil.abstract1_meet.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_meet.restype = ctypes.c_void_p
+
+libapronutil.abstract1_to_tcons_array.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_to_tcons_array.restype = ctypes.c_void_p
+
+libapronutil.tcons1_array_size.argtypes = [ctypes.c_void_p]
+libapronutil.tcons1_array_size.restype = ctypes.c_size_t
+
+libapronutil.tcons1_array_get.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+libapronutil.tcons1_array_get.restype = ctypes.c_void_p
+

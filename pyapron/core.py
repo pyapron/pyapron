@@ -202,21 +202,28 @@ class Var(Expr):
 
 
 class Constraint():
-    def __init__(self, const_type, lhs, rhs):
-        const_expr = BinaryExpr(AP_TEXPR_SUB, lhs, rhs)
+    def __init__(self, const_type=None, lhs=None, rhs=None, tcons1=None):
+        if tcons1 is not None:
+            self.ap_tcons1 = tcons1
+        else:
+            assert(const_type is not None)
+            assert(lhs is not None)
+            assert(rhs is not None)
 
-        # create scalar
-        const_scalar = libapron.ap_scalar_alloc()
-        assert(const_scalar != 0)
-        libapron.ap_scalar_set_int(const_scalar, ctypes.c_long(0))
+            const_expr = BinaryExpr(AP_TEXPR_SUB, lhs, rhs)
 
-        # create tcons1
-        tcons1 = libapronutil.tcons1_alloc(const_type,
-                const_expr.ap_expr,
-                const_scalar)
-        assert(tcons1 != 0)
+            # create scalar
+            const_scalar = libapron.ap_scalar_alloc()
+            assert(const_scalar != 0)
+            libapron.ap_scalar_set_int(const_scalar, ctypes.c_long(0))
 
-        self.ap_tcons1 = tcons1
+            # create tcons1
+            tcons1 = libapronutil.tcons1_alloc(const_type,
+                    const_expr.ap_expr,
+                    const_scalar)
+            assert(tcons1 != 0)
+
+            self.ap_tcons1 = tcons1
 
 
 def declare(names):

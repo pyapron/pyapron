@@ -1,4 +1,5 @@
 from lib import libapron, libpolka, libapronutil
+from core import Constraint
 import ctypes
 import copy
 
@@ -84,5 +85,44 @@ class Polyhedron:
         res.ap_val = xjoin
         return res
 
+    def meet(self, other):
+        # compute the least common environment
+        dimchange1 = ctypes.c_void_p(None)
+        dimchange2 = ctypes.c_void_p(None)
+        lce = libapron.ap_environment_lce(libapronutil.abstract1_env(self.ap_val),
+                                          libapronutil.abstract1_env(other.ap_val),
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+
+        # change the environments
+        tmp1 = libapronutil.abstract1_change_environment(pk_man,
+                                                         self.ap_val,
+                                                         lce)
+        tmp2 = libapronutil.abstract1_change_environment(pk_man,
+                                                         other.ap_val,
+                                                         lce)
+
+        # compute the meet
+        xjoin = libapronutil.abstract1_meet(pk_man,
+                                            tmp1,
+                                            tmp2)
+        res = copy.deepcopy(self)
+        res.ap_val = xjoin
+        return res
+
+    def constraints(self):
+        # get tcons1_array
+        tcons1_array = libapronutil.abstract1_to_tcons_array(pk_man, self.ap_val)
+
+        # get size of tcons1_array
+        size = libapronutil.tcons1_array_size(tcons1_array)
+
+        # create list of Constraint
+        constr_list = []
+        for i in range(size):
+            tcons1 = libapronutil.tcons1_array_get(tcons1_array, ctypes.c_size_t(i))
+            constr_list.append(Constraint(tcons1=tcons1))
+
+        return constr_list
 
 

@@ -135,3 +135,42 @@ ap_abstract1_t * abstract1_join(ap_manager_t * man,
     return ap_val;
 }
 
+ap_abstract1_t * abstract1_meet(ap_manager_t * man,
+                                ap_abstract1_t * x1,
+                                ap_abstract1_t * x2)
+{
+    ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
+    assert(ap_val);
+
+    *ap_val = ap_abstract1_meet(man, 0, x1, x2);
+    
+    return ap_val;
+}
+
+ap_tcons1_array_t * abstract1_to_tcons_array(ap_manager_t * man,
+                                             ap_abstract1_t * x)
+{
+    ap_tcons1_array_t * array = malloc(sizeof(ap_tcons1_array_t));
+    assert(array);
+
+    *array = ap_abstract1_to_tcons_array(man, x);
+
+    return array;
+}
+
+size_t tcons1_array_size(ap_tcons1_array_t * array)
+{
+    return ap_tcons1_array_size(array);
+}
+
+ap_tcons1_t * tcons1_array_get(ap_tcons1_array_t * array,
+                               size_t index)
+{
+    ap_tcons1_t * tcons1 = malloc(sizeof(ap_tcons1_t));
+    assert(tcons1);
+
+    *tcons1 = ap_tcons1_array_get(array, index);
+
+    return tcons1;
+}
+
