@@ -174,3 +174,13 @@ ap_tcons1_t * tcons1_array_get(ap_tcons1_array_t * array,
     return tcons1;
 }
 
+ap_constyp_t tcons1_constyp(ap_tcons1_t * tcons1)
+{
+    return *(ap_tcons1_constypref(tcons1));
+}
+
+ap_scalar_t * tcons1_scalar(ap_tcons1_t * tcons1)
+{
+    return ap_tcons1_scalarref(tcons1);
+}
+

@@ -246,3 +246,9 @@ libapronutil.tcons1_array_size.restype = ctypes.c_size_t
 libapronutil.tcons1_array_get.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
 libapronutil.tcons1_array_get.restype = ctypes.c_void_p
 
+libapronutil.tcons1_constyp.argtypes = [ctypes.c_void_p]
+libapronutil.tcons1_constyp.restype = ctypes.c_int
+
+libapronutil.tcons1_scalar.argtypes = [ctypes.c_void_p]
+libapronutil.tcons1_scalar.restype = ctypes.c_void_p
+

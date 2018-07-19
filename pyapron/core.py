@@ -22,11 +22,6 @@ AP_RTYPE_INT = libapronutil.get_ap_rtype_int()
 # Rounding direction
 AP_RDIR_NEAREST = libapronutil.get_ap_rdir_nearest()
 
-# Constraints types
-AP_CONS_EQ = libapronutil.get_ap_cons_eq()
-AP_CONS_SUPEQ = libapronutil.get_ap_cons_supeq()
-AP_CONS_SUP = libapronutil.get_ap_cons_sup()
-
 # Create apron texpr1 binary expression
 def texpr1_bin(op, e1, e2):
     rtype = AP_RTYPE_INT
@@ -115,38 +110,38 @@ class Expr():
 
     def __lt__(self, other):
         if isinstance(other, int):
-            return Constraint(AP_CONS_SUP, IntExpr(other), self)
+            return Constraint(ConstraintType.SUP, IntExpr(other), self)
         else:
             assert(isinstance(other, Expr))
-            return Constraint(AP_CONS_SUP, other, self)
+            return Constraint(ConstraintType.SUP, other, self)
 
     def __le__(self, other):
         if isinstance(other, int):
-            return Constraint(AP_CONS_SUPEQ, IntExpr(other), self)
+            return Constraint(ConstraintType.SUPEQ, IntExpr(other), self)
         else:
             assert(isinstance(other, Expr))
-            return Constraint(AP_CONS_SUPEQ, other, self)
+            return Constraint(ConstraintType.SUPEQ, other, self)
 
     def __gt__(self, other):
         if isinstance(other, int):
-            return Constraint(AP_CONS_SUP, self, IntExpr(other))
+            return Constraint(ConstraintType.SUP, self, IntExpr(other))
         else:
             assert(isinstance(other, Expr))
-            return Constraint(AP_CONS_SUP, self, other)
+            return Constraint(ConstraintType.SUP, self, other)
 
     def __ge__(self, other):
         if isinstance(other, int):
-            return Constraint(AP_CONS_SUPEQ, self, IntExpr(other))
+            return Constraint(ConstraintType.SUPEQ, self, IntExpr(other))
         else:
             assert(isinstance(other, Expr))
-            return Constraint(AP_CONS_SUPEQ, self, other)
+            return Constraint(ConstraintType.SUPEQ, self, other)
 
     def __eq__(self, other):
         if isinstance(other, int):
-            return Constraint(AP_CONS_EQ, self, IntExpr(other))
+            return Constraint(ConstraintType.EQ, self, IntExpr(other))
         else:
             assert(isinstance(other, Expr))
-            return Constraint(AP_CONS_EQ, self, other)
+            return Constraint(ConstraintType.EQ, self, other)
 
 
 # BinaryExpr
@@ -217,6 +212,12 @@ class Var(Expr):
         return self.name
 
 
+class ConstraintType():
+    EQ = libapronutil.get_ap_cons_eq()
+    SUPEQ = libapronutil.get_ap_cons_supeq()
+    SUP = libapronutil.get_ap_cons_sup()
+
+
 class Constraint():
     def __init__(self, const_type=None, lhs=None, rhs=None, tcons1=None):
         if tcons1 is not None:
@@ -240,6 +241,12 @@ class Constraint():
             assert(tcons1 != 0)
 
             self.ap_tcons1 = tcons1
+
+    def type():
+        return libapronutil.tcons1_constyp(self.ap_tcons1)
+
+    def scalar():
+        return libapronutil.tcons1_scalar(self.ap_tcons1)
 
 
 def declare(names):
