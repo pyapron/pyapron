@@ -211,6 +211,8 @@ class Var(Expr):
     def __str__(self):
         return self.name
 
+def var(name):
+    return Var(name)
 
 class ConstraintType():
     EQ = libapronutil.get_ap_cons_eq()
