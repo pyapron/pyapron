@@ -7,9 +7,6 @@ import copy
 pk_man = libpolka.pk_manager_alloc(ctypes.c_int(1))
 assert(pk_man != 0)
 
-def top():
-    empty_env = libapron.ap_environment_alloc_empty()
-    ap_val = libapron.ap_abstract1_top(pk_man, empty_env)
 
 def to_tcons1_array(constraints):
     tcons1_list = []
@@ -50,12 +47,29 @@ def to_tcons1_array(constraints):
 
 class Polyhedron:
     def __init__(self, constraints):
-        tcons1_array = to_tcons1_array(constraints)
-        tcons1_env = libapronutil.tcons1_array_env(tcons1_array)
-        ap_val = libapronutil.abstract1_of_tcons_array(pk_man,
-                                                       tcons1_env,
-                                                       tcons1_array)
-        self.ap_val = ap_val
+        if not constraints:
+            ap_val = libapronutil.abstract1_top(pk_man)
+            self.ap_val = ap_val
+            self.ap_env = libapronutil.abstract1_env(ap_val)
+        else:
+            tcons1_array = to_tcons1_array(constraints)
+            tcons1_env = libapronutil.tcons1_array_env(tcons1_array)
+            self.ap_val = libapronutil.abstract1_of_tcons_array(pk_man,
+                                                                tcons1_env,
+                                                                tcons1_array)
+
+    @staticmethod
+    def top():
+        return Polyhedron([])
+
+    @staticmethod
+    def bottom():
+        p = Polyhedron([])
+        ap_val = libapronutil.abstract1_bottom(pk_man)
+        ap_env = libapronutil.abstract1_env(ap_val)
+        p.ap_val = ap_val
+        p.ap_env= ap_env
+        return p
 
     def dump(self):
         libapronutil.abstract1_dump(pk_man, self.ap_val)
@@ -83,6 +97,33 @@ class Polyhedron:
                                             tmp2)
         res = copy.deepcopy(self)
         res.ap_val = xjoin
+        res.ap_env = libapronutil.abstract1_env(xjoin)
+        return res
+
+    def widening(self, other):
+        # compute the least common environment
+        dimchange1 = ctypes.c_void_p(None)
+        dimchange2 = ctypes.c_void_p(None)
+        lce = libapron.ap_environment_lce(libapronutil.abstract1_env(self.ap_val),
+                                          libapronutil.abstract1_env(other.ap_val),
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+
+        # change the environments
+        tmp1 = libapronutil.abstract1_change_environment(pk_man,
+                                                         self.ap_val,
+                                                         lce)
+        tmp2 = libapronutil.abstract1_change_environment(pk_man,
+                                                         other.ap_val,
+                                                         lce)
+
+        # compute the widening
+        wid = libapronutil.abstract1_widening(pk_man,
+                                              tmp1,
+                                              tmp2)
+        res = copy.deepcopy(self)
+        res.ap_val = wid
+        res.ap_env = libapronutil.abstract1_env(wid)
         return res
 
     def meet(self, other):
@@ -103,11 +144,12 @@ class Polyhedron:
                                                          lce)
 
         # compute the meet
-        xjoin = libapronutil.abstract1_meet(pk_man,
+        xmeet = libapronutil.abstract1_meet(pk_man,
                                             tmp1,
                                             tmp2)
         res = copy.deepcopy(self)
-        res.ap_val = xjoin
+        res.ap_val = xmeet
+        res.ap_env = libapronutil.abstract1_env(xmeet)
         return res
 
     def constraints(self):
@@ -125,4 +167,35 @@ class Polyhedron:
 
         return constr_list
 
+    def assign(self, var, expr):
+        # compute least common environment
+        dimchange1 = ctypes.c_void_p(None)
+        dimchange2 = ctypes.c_void_p(None)
+        lce = libapron.ap_environment_lce(expr.ap_env,
+                                          var.ap_env,
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+        lce = libapron.ap_environment_lce(lce,
+                                          self.ap_env,
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+
+        # change environment of self
+        xtmp = libapronutil.abstract1_change_environment(pk_man,
+                                                         self.ap_val,
+                                                         lce)
+
+        # change environment of expr
+        tmp_expr = libapron.ap_texpr1_extend_environment(expr.ap_expr, lce)
+
+        # assign
+        res_val = libapronutil.abstract1_assign(pk_man,
+                                                xtmp,
+                                                var.ap_var,
+                                                tmp_expr)
+        res = copy.deepcopy(self)
+        res.ap_val = res_val
+        res.ap_env = libapronutil.abstract1_env(res_val)
+
+        return res
 

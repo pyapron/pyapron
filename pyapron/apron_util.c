@@ -184,3 +184,54 @@ ap_scalar_t * tcons1_scalar(ap_tcons1_t * tcons1)
     return ap_tcons1_scalarref(tcons1);
 }
 
+ap_abstract1_t * abstract1_assign(ap_manager_t * man,
+                                  ap_abstract1_t * x,
+                                  ap_var_t var,
+                                  ap_texpr1_t * texpr1)
+{
+    ap_abstract1_t * res = malloc(sizeof(ap_abstract1_t));
+    assert(res);
+
+    *res = ap_abstract1_assign_texpr_array(man,
+                                           0,
+                                           x,
+                                           &var,
+                                           texpr1,
+                                           1,
+                                           NULL);
+    return res;
+}
+
+ap_abstract1_t * abstract1_top(ap_manager_t * man)
+{
+    ap_abstract1_t * res = malloc(sizeof(ap_abstract1_t));
+    assert(res);
+
+    ap_environment_t * empty_env = ap_environment_alloc_empty();
+    *res = ap_abstract1_top(man, empty_env);
+
+    return res;
+}
+
+ap_abstract1_t * abstract1_bottom(ap_manager_t * man)
+{
+    ap_abstract1_t * res = malloc(sizeof(ap_abstract1_t));
+    assert(res);
+
+    ap_environment_t * empty_env = ap_environment_alloc_empty();
+    *res = ap_abstract1_bottom(man, empty_env);
+
+    return res;
+}
+
+ap_abstract1_t * abstract1_widening(ap_manager_t * man,
+                                    ap_abstract1_t * x1,
+                                    ap_abstract1_t * x2)
+{
+    ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
+    assert(ap_val);
+
+    *ap_val = ap_abstract1_widening(man, x1, x2);
+    
+    return ap_val;
+}

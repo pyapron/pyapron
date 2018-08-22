@@ -252,3 +252,23 @@ libapronutil.tcons1_constyp.restype = ctypes.c_int
 libapronutil.tcons1_scalar.argtypes = [ctypes.c_void_p]
 libapronutil.tcons1_scalar.restype = ctypes.c_void_p
 
+libapronutil.abstract1_assign.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_assign.restype = ctypes.c_void_p
+
+libapronutil.abstract1_top.argtypes = [ctypes.c_void_p]
+libapronutil.abstract1_top.restype = ctypes.c_void_p
+
+libapronutil.abstract1_bottom.argtypes = [ctypes.c_void_p]
+libapronutil.abstract1_bottom.restype = ctypes.c_void_p
+
+libapronutil.abstract1_widening.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_widening.restype = ctypes.c_void_p
