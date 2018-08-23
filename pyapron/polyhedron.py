@@ -198,6 +198,28 @@ class Polyhedron:
         res = copy.deepcopy(self)
         res.ap_val = res_val
         res.ap_env = libapronutil.abstract1_env(res_val)
+        return res
 
+    def exists(self, var):
+        # compute least common environment
+        dimchange1 = ctypes.c_void_p(None)
+        dimchange2 = ctypes.c_void_p(None)
+        lce = libapron.ap_environment_lce(self.ap_env,
+                                          var.ap_env,
+                                          ctypes.byref(dimchange1),
+                                          ctypes.byref(dimchange2))
+
+        # change environment of self
+        xtmp = libapronutil.abstract1_change_environment(pk_man,
+                                                         self.ap_val,
+                                                         lce)
+
+        # forget variable var
+        res_val = libapronutil.abstract1_forget(pk_man,
+                                                xtmp,
+                                                var.ap_var)
+        res = copy.deepcopy(self)
+        res.ap_val = res_val
+        res.ap_env = libapronutil.abstract1_env(res_val)
         return res
 

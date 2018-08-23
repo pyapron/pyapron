@@ -272,3 +272,11 @@ libapronutil.abstract1_widening.argtypes = [
         ctypes.c_void_p
 ]
 libapronutil.abstract1_widening.restype = ctypes.c_void_p
+
+libapronutil.abstract1_forget.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapronutil.abstract1_forget.restype = ctypes.c_void_p
+

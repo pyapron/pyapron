@@ -235,3 +235,15 @@ ap_abstract1_t * abstract1_widening(ap_manager_t * man,
     
     return ap_val;
 }
+
+ap_abstract1_t * abstract1_forget(ap_manager_t * man,
+                                  ap_abstract1_t * x,
+                                  ap_var_t var)
+{
+    ap_abstract1_t * ap_val = malloc(sizeof(ap_abstract1_t));
+    assert(ap_val);
+
+    *ap_val = ap_abstract1_forget_array(man, 0, x, &var, 1, 0);
+    
+    return ap_val;
+}
