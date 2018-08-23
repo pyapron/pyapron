@@ -54,9 +54,11 @@ class Polyhedron:
         else:
             tcons1_array = to_tcons1_array(constraints)
             tcons1_env = libapronutil.tcons1_array_env(tcons1_array)
-            self.ap_val = libapronutil.abstract1_of_tcons_array(pk_man,
-                                                                tcons1_env,
-                                                                tcons1_array)
+            ap_val = libapronutil.abstract1_of_tcons_array(pk_man,
+                                                           tcons1_env,
+                                                           tcons1_array)
+            self.ap_env = libapronutil.abstract1_env(ap_val)
+            self.ap_val = ap_val
 
     @staticmethod
     def top():
