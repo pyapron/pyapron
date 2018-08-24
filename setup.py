@@ -97,7 +97,7 @@ with open("README.md", "r") as f:
     readme = f.read()
 
 setup(name='pyapron',
-      version='0.2',
+      version='0.4',
       description='Python API for numerical abstract domains manipulation',
       long_description=readme,
       long_description_content_type="text/markdown",
