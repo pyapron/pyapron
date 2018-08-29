@@ -97,6 +97,9 @@ class Expr():
         assert(isinstance(other, int))
         return BinaryExpr(AP_TEXPR_MUL, IntExpr(other), self)
 
+    def __neg__(self):
+        return BinaryExpr(AP_TEXPR_MUL, self, IntExpr(-1))
+
     def __div__(self, other):
         if isinstance(other, int):
             return BinaryExpr(AP_TEXPR_DIV, self, IntExpr(other))
