@@ -280,3 +280,8 @@ libapronutil.abstract1_forget.argtypes = [
 ]
 libapronutil.abstract1_forget.restype = ctypes.c_void_p
 
+libapron.ap_abstract1_bottom.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p
+]
+libapron.ap_abstract1_bottom.restype = ctypes.c_int

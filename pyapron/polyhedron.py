@@ -73,6 +73,9 @@ class Polyhedron:
         p.ap_env= ap_env
         return p
 
+    def is_bottom(self):
+        return libapron.ap_abstract1_is_bottom(pk_man, self.ap_val)
+
     def dump(self):
         libapronutil.abstract1_dump(pk_man, self.ap_val)
 
